@@ -1,6 +1,5 @@
 #include <ESP8266WiFi.h>        // Wifi library
 #include <PubSubClient.h>       // MQTT library
-#include <DallasTemperature.h> // temp
 #include <OneWire.h>
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic 
 
@@ -10,22 +9,13 @@ WiFiClient wifiClient;               // WiFi
 PubSubClient client(wifiClient);     // MQTT
 
 // PINS
-const int TEMP_PIN = D2;
 const int COFFEE_PIN = D1;
 const int LED_PIN = A0;
 
-// Sensors
-OneWire oneWire(TEMP_PIN);
-DallasTemperature sensors(&oneWire);
 
 // Timers
 const int CheckStatusInterval = 1000;
-const int SendTempInterval = 5000;
-
 unsigned long statTimer = 0;
-unsigned long tempTimer = 0;
-
-float Temp = 0;
 
 bool triggerCoffee = false;
 bool firstTrigger = true;
@@ -114,17 +104,6 @@ void loop() {
     }
   }
 
-  // send temp
-  if (millis() - tempTimer > SendTempInterval){
-    tempTimer = millis();
-    sensors.requestTemperatures();
-    float currentTemp = sensors.getTempCByIndex(0);
-    if (currentTemp != Temp){
-      Temp = currentTemp;
-      client.publish("coffee/temp", String(currentTemp).c_str(), 1);
-    }
-    
-  }
   
   client.loop();
 
