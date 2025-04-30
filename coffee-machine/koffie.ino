@@ -24,6 +24,7 @@ bool coffeeStatus = false;
 bool isConnected = false;
 
 void setup() {
+  Serial.begin(9600);
 
   WiFiManager wifiManager;
   WiFiManagerParameter custom_text("<p>(c) 2018 by <a href=\"mailto:dev@joszuijderwijk.nl\">Jos Zuijderwijk</a></p>");
@@ -35,6 +36,9 @@ void setup() {
   
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
+
+  pinMode(COFFEE_PIN, OUTPUT);
+
   
 }
 
@@ -88,6 +92,7 @@ void loop() {
 
     //double check
     if (analogRead(LED_PIN) > 500 != coffeeStatus){
+      Serial.println("Toggle coffee machine!");
       digitalWrite(COFFEE_PIN, HIGH);
       delay(500);
       digitalWrite(COFFEE_PIN, LOW);
